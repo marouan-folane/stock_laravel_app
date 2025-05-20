@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -45,14 +46,23 @@ class User extends Authenticatable
     ];
 
     /**
-     * Disable automatic password hashing
+     * Hash the password when it's set, unless it's already hashed.
      *
      * @param string $value
      * @return void
      */
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = $value;
+        // Check if the value is already hashed
+        if ($value) {
+            // If it's already a valid hash, don't hash it again
+            if (password_get_info($value)['algo'] !== 0) {
+                $this->attributes['password'] = $value;
+            } else {
+                // Hash the password if it's not already hashed
+                $this->attributes['password'] = Hash::make($value);
+            }
+        }
     }
 
     /**

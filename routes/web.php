@@ -29,6 +29,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\SupplierProfileController;
 use App\Http\Controllers\Auth\SupplierRegisterController;
+use App\Http\Controllers\Auth\PasswordResetCodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,14 @@ Route::post('/register/supplier', [SupplierRegisterController::class, 'register'
 
 // Authentication routes
 Auth::routes();
+
+// Password reset with code routes
+Route::get('/password/reset-code', [PasswordResetCodeController::class, 'showRequestForm'])->name('password.code.request');
+Route::post('/password/reset-code', [PasswordResetCodeController::class, 'sendResetCode'])->name('password.code.send');
+Route::get('/password/verify-code', [PasswordResetCodeController::class, 'showVerifyForm'])->name('password.code.verify');
+Route::post('/password/verify-code', [PasswordResetCodeController::class, 'verifyCode'])->name('password.code.verify');
+Route::get('/password/reset-with-code', [PasswordResetCodeController::class, 'showResetForm'])->name('password.code.reset');
+Route::post('/password/reset-with-code', [PasswordResetCodeController::class, 'resetPassword'])->name('password.code.reset');
 
 // Home route with role-based redirection
 Route::get('/home', [HomeController::class, 'index'])->name('home');

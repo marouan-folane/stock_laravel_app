@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Stock Manager') }} - Login</title>
+    <title>{{ config('app.name', 'Stock Manager') }} - Reset Password</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -108,7 +108,7 @@
 
         .form-control {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 3rem;
+            padding: 0.75rem 1rem 0.75rem 1rem;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             font-size: 1rem;
@@ -119,23 +119,6 @@
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
             outline: none;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4b5563;
-        }
-
-        .form-check {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-check-input {
-            margin-right: 0.5rem;
         }
 
         .btn-primary {
@@ -175,11 +158,6 @@
             margin-bottom: 1.5rem;
         }
 
-        .alert-danger ul {
-            padding-left: 1rem;
-            margin: 0;
-        }
-
         .footer {
             background-color: #f3f4f6;
             padding: 1rem;
@@ -188,42 +166,13 @@
             font-size: 0.875rem;
         }
 
-        .quote-section {
-            margin-bottom: 3rem;
-            background-image: url("back.jpeg")
-
-        }
-
-        .quote-text {
-            font-size: 1.5rem;
-            font-weight: 300;
-            font-style: italic;
-            margin-bottom: 1rem;
-        }
-
-        .quote-author {
-            font-weight: 600;
-        }
-
-        .company-badge {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 992px) {
             .login-container {
                 flex-direction: column;
                 height: auto;
             }
 
-            .login-form-section, .
-
-           {
+            .login-form-section, .login-image-section {
                 width: 100%;
             }
 
@@ -244,8 +193,8 @@
             <div class="login-card">
                 <div class="login-header">
                     <img src="{{ asset('img/logo.jpg') }}" alt="Stock Manager Logo" class="app-logo">
-                    <h1 class="h4" style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ config('app.name', 'Stock Manager') }}</h1>
-                    <p style="color: #6b7280; margin: 0;">Your complete stock management solution</p>
+                    <h1 class="h4" style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ __('Reset Password') }}</h1>
+                    <p style="color: #6b7280; margin: 0;">Create a new password for {{ $email }}</p>
                 </div>
 
                 <div class="login-form-content">
@@ -258,65 +207,36 @@
                             </ul>
                         </div>
                     @endif
-                    
+
                     @if (session('status'))
                         <div class="alert alert-success">
                             {{ session('status') }}
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('password.code.reset') }}">
                         @csrf
-
-                        @if(isset($redirect))
-                            <input type="hidden" name="redirect" value="{{ $redirect }}">
-                        @endif
+                        <input type="hidden" name="token" value="{{ $token }}">
+                        <input type="hidden" name="email" value="{{ $email }}">
 
                         <div class="input-group">
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                id="email" value="{{ old('email') }}" required autocomplete="email" autofocus
-                                placeholder="name@company.com">
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="input-group">
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                                id="password" required autocomplete="current-password"
-                                placeholder="••••••••">
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" 
+                                name="password" required autocomplete="new-password" placeholder="New password">
                             @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                             @enderror
                         </div>
 
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="remember">Remember me</label>
+                        <div class="input-group">
+                            <input id="password-confirm" type="password" class="form-control" 
+                                name="password_confirmation" required autocomplete="new-password" placeholder="Confirm new password">
                         </div>
 
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Sign In
+                            <i class="fas fa-lock" style="margin-right: 0.5rem;"></i> {{ __('Reset Password') }}
                         </button>
-
-                        {{-- Bouton Google --}}
-                        <div style="text-align: center; margin-top: 1.5rem;">
-                            <a href="{{ route('google-auth') }}" class="btn btn-light" style="border: 1px solid #e5e7eb; color: #1e3a8a; padding: 0.75rem 1.5rem; border-radius: 8px; display: inline-block; font-weight: 500; text-decoration: none;">
-                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width:20px; vertical-align:middle; margin-right:8px;">
-                                Se connecter avec Google
-                            </a>
-                        </div>
-
-                        <div style="text-align: center; margin-top: 1.5rem;">
-                            <a href="{{ route('password.code.request') }}" style="color: var(--secondary-color); text-decoration: none; margin-right: 1rem;">
-                                Forgot your password?
-                            </a>
-                            <a href="{{ route('public.signup') }}" style="color: #1e3a8a; text-decoration: none;">
-                                Register
-                            </a>
-                        </div>
-
-                     
                     </form>
                 </div>
 
@@ -328,13 +248,9 @@
 
         <div class="login-image-section" style="background-image: url('{{ asset('img/back.jpeg') }}');">
             <div class="login-image-overlay">
-
-
-
-
+                <!-- Content for the image overlay can be added here -->
+            </div>
         </div>
     </div>
-
-    <!-- Scripts -->
 </body>
-</html>
+</html> 
